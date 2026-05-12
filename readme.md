@@ -28,7 +28,7 @@ The system follows a client-server architecture with three main components commu
 To test the system locally, you will need to open **four separate terminal instances**.
 
 ### 1. Start the NameNode
-```bash
+
 g++ namenode.cpp -o n
 ./n
 2. Start the DataNodes
@@ -78,5 +78,5 @@ Stateless DataNodes: DataNodes do not talk to each other; they only respond to t
 ***
 
 ### Tips for your GitHub Repository:
-1.  **Format the Code:** Make sure your `.cpp` files have consistent indentation before uploading.
-2.  **Add a `.gitignore`:**# distributed-file-system-DFS-
+1.  **Format the Code:** Make sure your .cpp files have consistent indentation before uploading.
+2.  **Add a .gitignore:**# distributed-file-system-DFS-
