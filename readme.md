@@ -32,53 +32,65 @@ To test the system locally, you will need to open **four separate terminal insta
 
 ### 1. Compile the Source Code
 Compile the three components in your project directory:
-bash
+```bash
 g++ namenode.cpp -o n
 g++ datanode.cpp -o d
 g++ client.cpp -o c
-2. Start the NameNode (Terminal 1)
-Bash
+```
+
+### 2. Start the NameNode (Terminal 1)
+```bash
 ./n
-3. Start the DataNodes (Terminals 2 & 3)
+```
+
+### 3. Start the DataNodes (Terminals 2 & 3)
 Open two new terminal tabs and run:
 
-Terminal 2:
-
-Bash
+**Terminal 2:**
+```bash
 ./d 8081
-Terminal 3:
+```
 
-Bash
+**Terminal 3:**
+```bash
 ./d 8082
-4. Run the Client (Terminal 4)
+```
+
+### 4. Run the Client (Terminal 4)
 Create a test file and start the upload/download process:
 
-Terminal 4:
-
-Bash
+**Terminal 4:**
+```bash
 for i in {1..200}; do echo "Line $i: Testing Distributed Architecture" >> hello.txt; done
 
 ./c
-💥 Testing Fault Tolerance (The "Kill Test")
+```
+
+---
+
+## 💥 Testing Fault Tolerance (The "Kill Test")
+
 To verify the failover logic, simulate a server crash during the system's execution:
 
-Start the NameNode and both DataNodes.
+1. Start the NameNode and both DataNodes.
+2. Run the Client to upload `hello.txt`.
+3. Before the Client begins the download phase, **kill one of the DataNodes** (Press `Ctrl+C` in Terminal 2).
+4. Watch the Client gracefully catch the connection failure, switch to the backup DataNode on port 8082, and successfully reassemble the complete file.
 
-Run the Client to upload hello.txt.
+---
 
-Before the Client begins the download phase, kill one of the DataNodes (Press Ctrl+C in Terminal 2).
+## 🧹 Cleanup
 
-Watch the Client gracefully catch the connection failure, switch to the backup DataNode on port 8082, and successfully reassemble the complete file.
-
-🧹 Cleanup
-If ports get stuck in a TIME_WAIT state during testing, you can clear them using:
-
-Bash
+If ports get stuck in a `TIME_WAIT` state during testing, you can clear them using:
+```bash
 lsof -ti:9000,8081,8082 | xargs kill -9
 rm -rf storage_8081 storage_8082 downloaded_hello.txt
-🧠 Design Trade-Offs & Decisions
-TCP vs. UDP: TCP (SOCK_STREAM) was chosen to guarantee packet ordering and absolute data integrity, which is non-negotiable for a file system.
+```
 
-Chunk Sizing: Tuned to 1KB chunks for local testing. In a production environment handling gigabytes of data, this would be increased to 64MB (similar to HDFS) to reduce NameNode memory overhead.
+---
 
-Stateless DataNodes: DataNodes do not talk to each other; they only respond to the Client. This simplifies the architecture and prevents network deadlocks during development.
+## 🧠 Design Trade-Offs & Decisions
+
+* **TCP vs. UDP:** TCP (`SOCK_STREAM`) was chosen to guarantee packet ordering and absolute data integrity, which is non-negotiable for a file system.
+* **Chunk Sizing:** Tuned to 1KB chunks for local testing. In a production environment handling gigabytes of data, this would be increased to 64MB (similar to HDFS) to reduce NameNode memory overhead.
+* **Stateless DataNodes:** DataNodes do not talk to each other; they only respond to the Client. This simplifies the architecture and prevents network deadlocks during development.
