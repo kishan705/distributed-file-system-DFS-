@@ -28,24 +28,23 @@ The system follows a client-server architecture with three main components commu
 To test the system locally, you will need to open **four separate terminal instances**.
 
 ### 1. Start the NameNode
+g++ namenode.cpp -o namenode
+./namenode
 
-g++ namenode.cpp -o n
-./n
-2. Start the DataNodes
+###2. Start the DataNodes
 Open two new terminal tabs and run:
 
-Bash
-# Terminal 2
-g++ datanode.cpp -o d
-./d 8081
+###Terminal 2
+g++ datanode.cpp -o datanode
+./datanode 8081
 
-# Terminal 3
-./d 8082
-3. Run the Client
+###Terminal 3
+./datanode 8082
+
+###3. Run the Client
 Create a test file and start the upload/download process:
 
-Bash
-# Terminal 4
+###Terminal 4
 for i in {1..200}; do echo "Line $i: Testing Distributed Architecture" >> hello.txt; done
 
 g++ client.cpp -o c
@@ -63,20 +62,14 @@ Watch the Client gracefully catch the connection failure, switch to the backup D
 
 🧹 Cleanup
 If ports get stuck in a TIME_WAIT state during testing, you can clear them using:
-
-Bash
 lsof -ti:9000,8081,8082 | xargs kill -9
 rm -rf storage_8081 storage_8082 downloaded_hello.txt
+
 🧠 Design Trade-Offs & Decisions
 TCP vs. UDP: TCP (SOCK_STREAM) was chosen to guarantee packet ordering and absolute data integrity, which is non-negotiable for a file system.
 
 Chunk Sizing: Tuned to 1KB chunks for local testing. In a production environment handling gigabytes of data, this would be increased to 64MB (similar to HDFS) to reduce NameNode memory overhead.
 
 Stateless DataNodes: DataNodes do not talk to each other; they only respond to the Client. This simplifies the architecture and prevents network deadlocks during development.
-
-
 ***
 
-### Tips for your GitHub Repository:
-1.  **Format the Code:** Make sure your .cpp files have consistent indentation before uploading.
-2.  **Add a .gitignore:**# distributed-file-system-DFS-
