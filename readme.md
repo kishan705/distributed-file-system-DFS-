@@ -32,7 +32,7 @@ To test the system locally, you will need to open **four separate terminal insta
 
 ### 1. Compile the Source Code
 Compile the three components in your project directory:
-```bash
+bash
 g++ namenode.cpp -o n
 g++ datanode.cpp -o d
 g++ client.cpp -o c
